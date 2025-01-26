@@ -1,0 +1,28 @@
+.window {
+    flex-grow: 1;
+    justify-content: center;
+    align-self: auto;
+    align-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.71);
+    width: 500px;
+    height: 400px;
+    max-height: 400px;
+    transition-duration: 1s;
+    translate: 0 0;
+}
+
+.hide {
+    translate: 0 580px;
+}
+
+.resultWindow {
+    flex-grow: 0;
+    background-color: rgba(0, 0, 0, 0.78);
+    flex-shrink: 0;
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    transition-duration: 1s;
+}

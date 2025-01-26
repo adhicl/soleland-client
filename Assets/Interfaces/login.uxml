@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Interfaces/Login.uss?fileID=7433441132597879392&amp;guid=bb9085cb08e961140bddac2d105ccbbc&amp;type=3#Login" />
+    <ui:VisualElement name="login" style="flex-grow: 1; align-self: center; justify-content: center;">
+        <ui:VisualElement name="loginWindow" class="window">
+            <ui:Label text="Welcome To SoleLand" name="Label" style="background-color: rgba(255, 255, 255, 0); color: rgb(255, 255, 255); font-size: 21px;" />
+            <ui:Label text="WHACK A MOLE" name="Label" style="background-color: rgba(255, 255, 255, 0); color: rgb(255, 255, 255); font-size: 49px; margin-top: 15px; margin-bottom: 15px;" />
+            <ui:VisualElement style="flex-grow: 0; justify-content: center; -unity-background-scale-mode: stretch-to-fill; background-position-y: top 0; height: initial; max-height: initial; min-height: initial; -unity-text-align: middle-left; -unity-font-style: bold; align-items: stretch; align-self: auto; flex-direction: column; align-content: auto; flex-shrink: 0; margin-bottom: 15px;">
+                <ui:TextField label="Address" placeholder-text="filler text" name="tAddress" value="localhost" style="color: rgb(156, 156, 156);" />
+                <ui:TextField label="Port" placeholder-text="filler text" value="8080" name="tPort" style="background-color: rgba(255, 255, 255, 0); -unity-text-outline-color: rgba(255, 255, 255, 0); color: rgb(156, 156, 156);" />
+            </ui:VisualElement>
+            <ui:Button text="Ready Join" name="joinBtn" style="font-size: 26px; -unity-font-style: bold; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

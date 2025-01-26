@@ -1,0 +1,18 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Interfaces/Login.uss?fileID=7433441132597879392&amp;guid=bb9085cb08e961140bddac2d105ccbbc&amp;type=3#Login" />
+    <engine:VisualElement style="flex-grow: 1; align-items: flex-start; align-content: flex-start; -unity-text-align: upper-left; flex-direction: row; justify-content: center; position: relative;">
+        <engine:VisualElement name="Score" style="flex-grow: 0; background-color: rgb(0, 0, 0); flex-shrink: 0; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;">
+            <engine:Label text="SCORE" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 22px; -unity-text-align: upper-center;" />
+            <engine:VisualElement style="flex-grow: 0; flex-shrink: 0; flex-direction: row; background-color: rgba(0, 0, 0, 0); align-self: flex-start; align-content: center; max-width: 100px; min-width: 100px; width: 100px; justify-content: space-around; align-items: flex-start;">
+                <engine:Label text="0" name="Score1" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 25px;" />
+                <engine:Label text="1&#x9;" name="Score2" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 25px;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+    </engine:VisualElement>
+    <engine:VisualElement style="flex-grow: 1; position: absolute; top: 0; left: 0; right: 0; bottom: 0; align-items: center; justify-content: center; -unity-font-style: italic;">
+        <engine:VisualElement name="resultWindow" class="resultWindow hide">
+            <engine:Label text="PLAYER XXX WIN!" name="lblWinning" style="color: rgb(255, 255, 255); font-size: 25px; margin-bottom: 20px;" />
+            <engine:Button text="FINISH" name="finishBtn" style="-unity-font-style: normal; font-size: 19px;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
