@@ -14,11 +14,17 @@ public class PlayerController : MonoBehaviour
 
     private bool _canMove = false;
     private readonly float _delayMove = 1f;
+
+    private AudioSource _audioSource;
+    [SerializeField] AudioClip _swingSound;
+    [SerializeField] AudioClip _hitSound;
+    [SerializeField] ParticleSystem _hitEffect;
     
     private void Start()
     {
         _animator = GetComponent<Animator>();
         _input = new InputSystem_Actions();
+        _audioSource = GetComponent<AudioSource>();
 
         GameController.Instance.OnGameStart += StartGame;
     }
@@ -67,6 +73,7 @@ public class PlayerController : MonoBehaviour
         _animator.SetTrigger("Hit");
         _canMove = false;
 
+        _audioSource.PlayOneShot(_swingSound);
         StartCoroutine(StartMoveAgain(_delayMove));
     }
 
@@ -80,13 +87,14 @@ public class PlayerController : MonoBehaviour
     
     private void OnHitEffect()
     {
-        
     }
     
     #endregion
 
     public void PlayerScoreHit()
     {
+        _audioSource.PlayOneShot(_hitSound);
+        _hitEffect.Play();
         //throw new NotImplementedException();
     }
 }
