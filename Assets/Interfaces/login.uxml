@@ -8,7 +8,10 @@
                 <ui:TextField label="Address" placeholder-text="filler text" name="tAddress" value="localhost" style="color: rgb(156, 156, 156);" />
                 <ui:TextField label="Port" placeholder-text="filler text" value="8080" name="tPort" style="background-color: rgba(255, 255, 255, 0); -unity-text-outline-color: rgba(255, 255, 255, 0); color: rgb(156, 156, 156);" />
             </ui:VisualElement>
-            <ui:Button text="Ready Join" name="joinBtn" style="font-size: 26px; -unity-font-style: bold; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;" />
+            <ui:VisualElement style="flex-grow: 1;">
+                <ui:Label tabindex="-1" text="this is error message" parse-escape-sequences="true" display-tooltip-when-elided="true" name="lblError" style="color: rgb(255, 255, 255); -unity-text-align: upper-center;" />
+                <ui:Button text="Ready Join" name="joinBtn" style="font-size: 26px; -unity-font-style: bold; border-top-left-radius: 10px; border-top-right-radius: 10px; border-bottom-right-radius: 10px; border-bottom-left-radius: 10px;" />
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
