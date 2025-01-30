@@ -2,7 +2,7 @@ using System;
 using Sfs2X.Entities.Data;
 using UnityEngine;
 
-public class PlayerTransform : MonoBehaviour
+public class PlayerTransform
 {
     private Vector3 position;
     private Vector3 angleRotation;
@@ -104,7 +104,7 @@ public class PlayerTransform : MonoBehaviour
         return chtransform;
     }
 
-    public static PlayerTransform FromTransform(Transform transform, Transform spine)
+    public static PlayerTransform FromTransform(Transform transform)
     {
         PlayerTransform trans = new PlayerTransform();
         trans.position = transform.position;

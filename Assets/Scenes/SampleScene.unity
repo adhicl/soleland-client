@@ -482,6 +482,9 @@ MonoBehaviour:
   UdpPort: 9933
   zone: Soleland
   debug: 0
+  clientServerLag: 0
+  lastServerTime: 0
+  lastLocalTime: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

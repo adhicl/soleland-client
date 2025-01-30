@@ -123,6 +123,12 @@ public class NetworkController : MonoBehaviour
 		sfs.Connect(cfg);
 	}
 
+	public void Disconnect()
+	{
+		RemoveSmartFoxListeners();
+		sfs.Disconnect();
+	}
+
 	/**
 	 * Add all SmartFoxServer-related event listeners required by the scene.
 	 */
@@ -140,6 +146,9 @@ public class NetworkController : MonoBehaviour
         //sfs.AddEventListener(SFSEvent.USER_COUNT_CHANGE, OnUserCountChanged);
         sfs.AddEventListener(SFSEvent.ROOM_JOIN, OnRoomJoin);
         sfs.AddEventListener(SFSEvent.ROOM_JOIN_ERROR, OnRoomJoinError);
+        
+        sfs.AddEventListener(SFSEvent.EXTENSION_RESPONSE, OnExtensionResponse);
+        sfs.AddEventListener(SFSEvent.PING_PONG, OnPingPong);
     }
 
 	/**
@@ -166,6 +175,9 @@ public class NetworkController : MonoBehaviour
             //sfs.RemoveEventListener(SFSEvent.USER_COUNT_CHANGE, OnUserCountChanged);
             sfs.RemoveEventListener(SFSEvent.ROOM_JOIN, OnRoomJoin);
             sfs.RemoveEventListener(SFSEvent.ROOM_JOIN_ERROR, OnRoomJoinError);
+			
+            sfs.RemoveEventListener(SFSEvent.EXTENSION_RESPONSE, OnExtensionResponse);
+            sfs.RemoveEventListener(SFSEvent.PING_PONG, OnPingPong);
         }
 	}
 
@@ -295,6 +307,8 @@ public class NetworkController : MonoBehaviour
 		onError?.Invoke("Room Joined. Waiting for game start signal");
 		
 		onConnected?.Invoke();
+		
+		SendSpawnRequest();
 	}
 
 	private void OnRoomJoinError(BaseEvent evt)
@@ -305,6 +319,11 @@ public class NetworkController : MonoBehaviour
 		sfs.Disconnect();
 		// Enable user interface
 		onDisconnected?.Invoke();
+	}
+
+	public void OnPingPong(BaseEvent evt)
+	{
+		clientServerLag = (int)evt.Params["lagValue"] / 2;
 	}
 	
     #endregion
@@ -351,10 +370,218 @@ public class NetworkController : MonoBehaviour
     
     // ================ game manager part ===================
     
+    /**
+      * ------------------------------------------------------
+      * Network Send Methods
+      * ------------------------------------------------------
+      *
+      * This section contains the creation of SFS Objects that
+      * are transmitted to the Server Scripts
+      *
+      */
+
+    #region Network Send Methods
+    
     public void TimeSyncRequest()
     {
 	    Room room = sfs.LastJoinedRoom;
 	    ExtensionRequest request = new ExtensionRequest("getTime", new SFSObject(), room);
 	    sfs.Send(request);
     }
+
+    public void SendSpawnRequest()
+    {
+	    Debug.Log("Send Spawn Request");
+        Room room = sfs.LastJoinedRoom;
+        ISFSObject data = new SFSObject();
+        ExtensionRequest request = new ExtensionRequest("spawnMe", data, room);
+        sfs.Send(request);
+    }
+	/*
+    public void SendShot(int target)
+    {
+        Room room = smartFox.LastJoinedRoom;
+        ISFSObject data = new SFSObject();
+        data.PutInt("target", target);
+        ExtensionRequest request = new ExtensionRequest("shot", data, room);
+        smartFox.Send(request);
+    }
+	//*/
+
+    public void SendTransform(PlayerTransform chtransform)
+    {
+        Room room = sfs.LastJoinedRoom;
+        ISFSObject data = new SFSObject();
+        chtransform.ToSFSObject(data);
+        ExtensionRequest request = new ExtensionRequest("sendTransform", data, room, true); // True flag = UDP
+        sfs.Send(request);
+    }
+
+    public void SendAnimationState(string message)
+    {
+        Room room = sfs.LastJoinedRoom;
+        ISFSObject data = new SFSObject();
+        data.PutUtfString("msg", message);
+        ExtensionRequest request = new ExtensionRequest("sendAnim", data, room);
+        sfs.Send(request);
+    }
+
+    public void SendPlayerScore(int moleIndex)
+    {
+	    Room room = sfs.LastJoinedRoom;
+	    ISFSObject data = new SFSObject();
+	    data.PutInt("target", moleIndex);
+	    ExtensionRequest request = new ExtensionRequest("hitMole", data, room);
+	    sfs.Send(request);
+    }
+    
+    #endregion
+    
+    /**
+      * ------------------------------------------------------
+      *    Network Receive Methods
+      * ------------------------------------------------------
+      * 
+      * This section contains Methods that are executed when 
+      * they receive of SFS Objects from the Server Scripts
+      * 
+      */
+
+    #region Network Receive Methods
+
+    private void OnExtensionResponse(BaseEvent evt)
+    {
+        string cmd = (string)evt.Params["cmd"];
+        ISFSObject sfsobject = (SFSObject)evt.Params["params"];
+
+        Debug.Log("OnExtensionResponse " + cmd);
+        
+        switch (cmd)
+        {
+            case "spawnPlayer":
+                {
+                    HandleInstantiatePlayer(sfsobject);
+                }
+                break;
+            case "transform":
+                {
+                    HandleTransform(sfsobject);
+                }
+                break;
+            case "anim":
+	            {
+		            HandleAnimation(sfsobject);
+	            }
+	            break;
+            case "score":
+                {
+                    HandleScoreChange(sfsobject);
+                }
+                break;
+            case "time":
+                {
+                    HandleServerTime(sfsobject);
+                }
+                break;
+            case "startGame":
+            {
+	            HandleStartGame(sfsobject);
+            }
+	            break;
+            case "moleSpawn":
+            {
+	            HandleSpawnMole(sfsobject);
+            }
+	            break;
+            case "stopGame":
+	            HandleStopGame(sfsobject);
+	            break;
+        }
+    }
+    
+    private void HandleInstantiatePlayer(ISFSObject sfsobject)
+    {
+	    GameController.Instance.HandleInstantiatePlayer(sfsobject, sfs);
+    }
+
+    private void HandleTransform(ISFSObject sfsobject)
+    {
+        int userId = sfsobject.GetInt("id");
+        PlayerTransform chtransform = PlayerTransform.FromSFSObject(sfsobject);
+        if (userId != sfs.MySelf.Id)
+        {
+	        Debug.Log("Receive transform for remote palyer "+GameController.Instance.players.ContainsKey(userId));
+	        
+            if (GameController.Instance.players.ContainsKey(userId))
+            {
+	            PlayerController remotePlayerController = GameController.Instance.players[userId];
+                remotePlayerController.ReceiveTransform(chtransform);
+            }
+        }
+    }
+
+    private void HandleAnimation(ISFSObject sfsobject)
+    {
+        int userId = sfsobject.GetInt("id");
+        string msg = sfsobject.GetUtfString("msg");
+        if (userId != sfs.MySelf.Id)
+        {
+            if (GameController.Instance.players.ContainsKey(userId))
+            {
+                PlayerController remotePlayerController = GameController.Instance.players[userId];
+                remotePlayerController.AnimationSync(msg);
+            }
+        }
+    }
+
+    private void HandleServerTime(ISFSObject sfsobject)
+    {
+        long time = sfsobject.GetLong("t");
+        double timePassed = this.clientServerLag / 2.0f;
+        lastServerTime = Convert.ToDouble(time) + timePassed;
+        lastLocalTime = Time.time;
+    }
+
+    private void HandleScoreChange(ISFSObject sfsobject)
+    {
+	    int userId = sfsobject.GetInt("id");
+	    int c = sfsobject.GetInt("score");
+	    int position = sfsobject.GetInt("position");
+	    
+	    Debug.Log("Player score "+position+" "+c);
+	    if (GameController.Instance.players.ContainsKey(userId))
+	    {
+		    PlayerController remotePlayerController = GameController.Instance.players[userId];
+		    remotePlayerController.score = c;
+	    }
+
+	    GameController.Instance.ReceivePlayerScore(position, c);
+    }
+
+    private void HandleStartGame(ISFSObject sfsobject)
+    {
+	    GameController.Instance.GameStart();
+    }
+
+    private void HandleSpawnMole(ISFSObject sfsobject)
+    {
+	    int moleIndex = sfsobject.GetInt("index");
+	    GameController.Instance.SpringUpMole(moleIndex);
+    }
+
+    private void HandleStopGame(ISFSObject sfsObject)
+    {
+	    int result = sfsObject.GetInt("result");
+	    if (result == -1) // player disconnected
+	    {
+		    Disconnect();
+		    SceneManager.LoadScene(0); // reload scene
+	    }
+	    else
+	    {
+		    GameController.Instance.GameOver(result);
+	    }
+    }
+    
+    #endregion
 }

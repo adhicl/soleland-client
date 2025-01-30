@@ -10,6 +10,8 @@ public class Mole : MonoBehaviour
     
     private bool _isStayUp = false;
     private float _timerStayUp = 0f;
+    public int index = 0;
+    
     public void SpringUp()
     {
         _isStayUp = true;
@@ -48,7 +50,7 @@ public class Mole : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             GetHit();
-            other.gameObject.GetComponent<IHitable>().DoScoreHit();
+            other.gameObject.GetComponent<IHitable>().DoScoreHit(this.index);
         }
     }
 }

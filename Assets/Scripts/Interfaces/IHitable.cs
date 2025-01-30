@@ -4,6 +4,6 @@ namespace Interfaces
 {
     public interface IHitable
     {
-        public void DoScoreHit();
+        public void DoScoreHit(int moleIndex);
     }
 }

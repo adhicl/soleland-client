@@ -5,8 +5,8 @@ using UnityEngine;
     public class Hammer : MonoBehaviour, IHitable
     {
         [SerializeField] private PlayerController playerParent;
-        public void DoScoreHit()
+        public void DoScoreHit(int moleIndex)
         {
-            playerParent.PlayerScoreHit();
+            playerParent.PlayerScoreHit(moleIndex);
         }
     }
